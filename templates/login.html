@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center;">
+    <div class="glass-card" style="width: 100%; max-width: 400px; padding: 40px; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 20px;"></div>
+        <h2 style="font-size: 1.8rem; margin-bottom: 5px;">Welcome Back</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Silahkan Masukan PIN Anda</p>
+        
+        <form method="post">
+            <input type="password" name="pin" placeholder="•••••" autofocus required
+                   style="width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 1.5rem; text-align: center; letter-spacing: 5px;">
+            
+            <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 15px;">
+                ACCESS DASHBOARD
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

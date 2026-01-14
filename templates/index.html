@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1 style="font-size: 2rem; margin-bottom: 5px;">Dashboard</h1>
+        <p style="color: var(--text-muted);">Gas Metering</p>
+    </div>
+    <!-- <a href="#" class="btn btn-primary">Add Device</a> -->
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;">
+    {% for d in devices %}
+    <a href="/report/{{ d.id }}" style="text-decoration: none; color: inherit;">
+        <div class="glass-card" style="padding: 25px; position: relative; overflow: hidden;">
+            <!-- Glow Effect -->
+            <div style="position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: var(--primary); filter: blur(60px); opacity: 0.2; border-radius: 50%;"></div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 1.2rem;">{{ d.id }}</h3>
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);">
+                    <span class="status-dot {% if d.is_late %}offline{% else %}online{% endif %}"></span>
+                    <span style="font-size: 0.8rem; font-weight: 600;">
+                        {{ 'OFFLINE' if d.is_late else 'ONLINE' }}
+                    </span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">CURRENT READING</div>
+                <div class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--primary); letter-spacing: 2px;">
+                    {{ d.reading|format_reading }}
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 15px;">
+                <div>
+                    CONFIDENCE
+                    <div style="color: var(--text-main); font-weight: 600;">{{ "%.0f"|format(d.conf * 100) }}%</div>
+                </div>
+                <div style="text-align: right;">
+                    TERAKHIR DIBACA
+                    <div style="color: var(--text-main); font-weight: 600;">{{ d.last_seen }}</div>
+                </div>
+            </div>
+        </div>
+    </a>
+    {% else %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-muted);">
+        <h2>No Devices Found</h2>
+        <p>Please run setup_roi.py to configure your first device.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Auto refresh dashboard every 60s
+    setTimeout(() => window.location.reload(), 60000);
+</script>
+{% endblock %}

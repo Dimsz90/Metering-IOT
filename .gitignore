@@ -1,0 +1,13 @@
+# .env file example - DO NOT commit to git
+*.env
+__pycache__/
+*.pyc
+uploads/
+debug_*/
+*.log
+admin.py
+gauge_reader.py
+DEPLOY_VPS.md
+esp32_cam_client.ino
+2.jpg
+debug_preprocessed/
