@@ -24,8 +24,8 @@ Sistem otomatis untuk membaca meteran gas menggunakan ESP32-CAM dan OCR (Optical
 
 1. Clone repository:
 ```bash
-git clone https://github.com/username/gas-meter-reader.git
-cd gas-meter-reader
+git clone https://github.com/Dimsz90/Metering-IOT
+cd Metering-IOT
 ```
 
 2. Install dependencies:
