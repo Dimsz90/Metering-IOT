@@ -1,9 +1,23 @@
+# Core Web Framework
 flask
+gunicorn
+python-dotenv
+
+# Database
 mysql-connector-python
+
+# Image Processing & OCR
 opencv-python-headless
 numpy
 pillow
 pytesseract
+easyocr
+
+# Visualization & Tools
 matplotlib
-gunicorn
-python-dotenv
+argparse
+
+# Google Sheets Logging (Optional)
+gspread
+oauth2client
+google-api-python-client

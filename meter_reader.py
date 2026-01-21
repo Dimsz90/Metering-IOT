@@ -379,42 +379,43 @@ class MultiMethodOCRAnalyzer:
         h, w = gray.shape
         variants = []
         
-        # Variant 1: Standard processing
-        scaled = cv2.resize(gray, (w*3, h*3), interpolation=cv2.INTER_CUBIC)
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        # Variant 1: Standard processing (High Scale)
+        scaled = cv2.resize(gray, (w*5, h*5), interpolation=cv2.INTER_CUBIC)
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
         enhanced = clahe.apply(scaled)
         _, binary = cv2.threshold(enhanced, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         if np.sum(binary == 0) > np.sum(binary == 255):
             binary = cv2.bitwise_not(binary)
-        padded = cv2.copyMakeBorder(binary, 15, 15, 15, 15, cv2.BORDER_CONSTANT, value=255)
+        padded = cv2.copyMakeBorder(binary, 20, 20, 20, 20, cv2.BORDER_CONSTANT, value=255)
         variants.append(("Standard", padded))
         
-        # Variant 2: High contrast
-        scaled2 = cv2.resize(gray, (w*4, h*4), interpolation=cv2.INTER_LANCZOS4)
-        clahe2 = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(4, 4))
-        enhanced2 = clahe2.apply(scaled2)
-        binary2 = cv2.adaptiveThreshold(enhanced2, 255, 
-                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                       cv2.THRESH_BINARY, 11, 2)
-        if np.sum(binary2 == 0) > np.sum(binary2 == 255):
-            binary2 = cv2.bitwise_not(binary2)
-        padded2 = cv2.copyMakeBorder(binary2, 20, 20, 20, 20, cv2.BORDER_CONSTANT, value=255)
-        variants.append(("HighContrast", padded2))
+        # Variant 2: Green-Channel Extraction (Kunci untuk Angka Background Merah)
+        if len(digit_img.shape) == 3:
+            # Di channel Hijau, background merah akan terlihat gelap/hitam
+            green_ch = digit_img[:,:,1] 
+            scaled_g = cv2.resize(green_ch, (w*5, h*5), interpolation=cv2.INTER_LANCZOS4)
+            _, binary_g = cv2.threshold(scaled_g, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            if np.sum(binary_g == 0) > np.sum(binary_g == 255):
+                binary_g = cv2.bitwise_not(binary_g)
+            padded_g = cv2.copyMakeBorder(binary_g, 20, 20, 20, 20, cv2.BORDER_CONSTANT, value=255)
+            variants.append(("GreenChannel", padded_g))
         
-        # Variant 3: Enhanced processing
-        scaled3 = cv2.resize(gray, (w*4, h*4), interpolation=cv2.INTER_CUBIC)
-        gamma = 0.4
+        # Variant 3: Super Enhanced (Sharpen & Denoise)
+        scaled3 = cv2.resize(gray, (w*5, h*5), interpolation=cv2.INTER_CUBIC)
+        # Denoise untuk menghilangkan bintik hitam
+        denoised3 = cv2.fastNlMeansDenoising(scaled3, None, 10, 7, 21)
+        gamma = 0.5
         invGamma = 1.0 / gamma
         table = np.array([((i / 255.0) ** invGamma) * 255 
                          for i in np.arange(0, 256)]).astype("uint8")
-        gamma_corrected = cv2.LUT(scaled3, table)
-        kernel = np.array([[-1,-1,-1], [-1,10,-1], [-1,-1,-1]])
+        gamma_corrected = cv2.LUT(denoised3, table)
+        kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
         sharpened = cv2.filter2D(gamma_corrected, -1, kernel)
         _, binary3 = cv2.threshold(sharpened, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         if np.sum(binary3 == 0) > np.sum(binary3 == 255):
             binary3 = cv2.bitwise_not(binary3)
-        padded3 = cv2.copyMakeBorder(binary3, 20, 20, 20, 20, cv2.BORDER_CONSTANT, value=255)
-        variants.append(("Enhanced", padded3))
+        padded3 = cv2.copyMakeBorder(binary3, 25, 25, 25, 25, cv2.BORDER_CONSTANT, value=255)
+        variants.append(("SuperEnhanced", padded3))
         
         return variants
     

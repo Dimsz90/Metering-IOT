@@ -38,6 +38,12 @@
                     CONFIDENCE
                     <div style="color: var(--text-main); font-weight: 600;">{{ "%.0f"|format(d.conf * 100) }}%</div>
                 </div>
+                <div style="text-align: center;">
+                    TEMP
+                    <div class="{% if d.temp and d.temp > 70 %}text-danger{% else %}text-main{% endif %}" style="font-weight: 600;">
+                        {{ "%.1f"|format(d.temp) if d.temp else '--' }}°C
+                    </div>
+                </div>
                 <div style="text-align: right;">
                     TERAKHIR DIBACA
                     <div style="color: var(--text-main); font-weight: 600;">{{ d.last_seen }}</div>

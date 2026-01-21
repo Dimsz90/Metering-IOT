@@ -8,7 +8,7 @@ from datetime import datetime
 import sys
 
 # Default configuration
-DEFAULT_IMAGE = "R.jpg"
+DEFAULT_IMAGE = "3.jpg"
 DEFAULT_CONFIG = "roi_config.json"
 
 class ROISelector:

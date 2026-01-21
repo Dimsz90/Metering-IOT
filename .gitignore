@@ -1,13 +1,56 @@
-# .env file example - DO NOT commit to git
+# Environment and local settings
+.env
 *.env
+.venv/
+venv/
+env/
+
+# Python Cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Ignore ALL temporary/data folders
 uploads/
+debug/
 debug_*/
-*.log
+results/
+training_work/
+output_model/
+training_data/
+tesstrain/
+images/
+ground_truth/
+
+# Ignore ALL Scripts NOT used in production
 admin.py
 gauge_reader.py
+meter_reader.py
+prepare_data.py
+prepare_training.py
+train_model.py
+setup_roi.py
+ocr_analyzer.py 
+
+# Ignore Documentation & Tutorials (hanya untuk operasional VPS)
 DEPLOY_VPS.md
-esp32_cam_client.ino
-2.jpg
-debug_preprocessed/
+FULL_TUTORIAL.md
+
+# Ignore Credentials & Bak
+credentials.json
+*.bak
+roi_config.json.bak
+
+# Logs
+*.log
+training_log.txt
+
+# Loose test images
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.ico
+!favicon.ico
