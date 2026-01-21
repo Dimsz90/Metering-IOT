@@ -49,20 +49,6 @@ CREATE DATABASE meter_readings;
 python flask_server.py
 ```
 
-Server akan berjalan di `http://localhost:5000`
-
-## 📋 Setup Device Baru
-
-1. Jalankan ROI setup untuk konfigurasi area pembacaan:
-```bash
-python setup_roi.py
-```
-
-2. Upload ESP32 code (`esp32_cam_client.ino`) ke ESP32-CAM
-3. Konfigurasi WiFi dan server IP di code ESP32
-4. Device akan otomatis muncul di dashboard
-
-## 🔧 Configuration
 
 Edit file `.env`:
 
