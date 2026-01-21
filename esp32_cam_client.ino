@@ -388,6 +388,19 @@ void handleRoot() {
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     
+    /* Camera Tab - Two Column Layout */
+    .camera-tab { display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
+    @media (max-width: 1000px) {
+      .camera-tab { grid-template-columns: 1fr; }
+    }
+    
+    /* Live Preview Mini */
+    .live-preview-mini { background: #000; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+    .live-preview-mini h3 { padding: 15px; margin: 0; background: #1a1a1a; color: #00ff88; }
+    .preview-container { position: relative; }
+    #cameraPreview { width: 100%; max-height: 300px; object-fit: contain; display: block; }
+    .preview-refresh { position: absolute; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+    
     /* ROI Setup Styles */
     .roi-setup { background: #1a1a1a; padding: 20px; border-radius: 10px; }
     .roi-canvas-container { position: relative; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 15px; }
@@ -405,6 +418,7 @@ void handleRoot() {
       50% { opacity: 0.5; }
     }
     
+    /* Main Preview */
     .preview { background: #000; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
     .stream-container { position: relative; max-width: 800px; margin: auto; }
     .stream-container img { width: 100%; border-radius: 5px; }
@@ -430,6 +444,7 @@ void handleRoot() {
     .btn-danger { background: #ff4444; color: white; }
     .btn-info { background: #4444ff; color: white; }
     .btn-warning { background: #ff8800; color: white; }
+    .btn-small { padding: 8px 15px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -495,35 +510,90 @@ void handleRoot() {
       </div>
     </div>
 
-    <!-- CAMERA SETTINGS -->
+    <!-- CAMERA SETTINGS with Live Preview -->
     <div id="camera" class="tab-content">
-      <div class="controls">
-        <div class="control-group">
-          <h3>🎨 Image Quality</h3>
-          <div class="control-item">
-            <label>Brightness <span class="value-display" id="val_brightness">0</span></label>
-            <input type="range" id="brightness" min="-2" max="2" value="0" oninput="updateSetting(this)">
-          </div>
-          <div class="control-item">
-            <label>Contrast <span class="value-display" id="val_contrast">0</span></label>
-            <input type="range" id="contrast" min="-2" max="2" value="0" oninput="updateSetting(this)">
-          </div>
-          <div class="control-item">
-            <label>Saturation <span class="value-display" id="val_saturation">0</span></label>
-            <input type="range" id="saturation" min="-2" max="2" value="0" oninput="updateSetting(this)">
+      <div class="camera-tab">
+        <div>
+          <div class="controls">
+            <div class="control-group">
+              <h3>🎨 Image Quality</h3>
+              <div class="control-item">
+                <label>Brightness <span class="value-display" id="val_brightness">0</span></label>
+                <input type="range" id="brightness" min="-2" max="2" value="0" oninput="updateSetting(this, true)">
+              </div>
+              <div class="control-item">
+                <label>Contrast <span class="value-display" id="val_contrast">0</span></label>
+                <input type="range" id="contrast" min="-2" max="2" value="0" oninput="updateSetting(this, true)">
+              </div>
+              <div class="control-item">
+                <label>Saturation <span class="value-display" id="val_saturation">0</span></label>
+                <input type="range" id="saturation" min="-2" max="2" value="0" oninput="updateSetting(this, true)">
+              </div>
+              <div class="control-item">
+                <label>Sharpness <span class="value-display" id="val_sharpness">0</span></label>
+                <input type="range" id="sharpness" min="-2" max="2" value="0" oninput="updateSetting(this, true)">
+              </div>
+              <div class="control-item">
+                <label>Quality <span class="value-display" id="val_quality">12</span></label>
+                <input type="range" id="quality" min="4" max="63" value="12" oninput="updateSetting(this, true)">
+              </div>
+            </div>
+            
+            <div class="control-group">
+              <h3>⚡ Exposure & Gain</h3>
+              <div class="control-item">
+                <label><input type="checkbox" id="aec" onchange="updateSetting(this, true)"> Auto Exposure</label>
+              </div>
+              <div class="control-item">
+                <label>Exposure Value <span class="value-display" id="val_aec_value">300</span></label>
+                <input type="range" id="aec_value" min="0" max="1200" value="300" oninput="updateSetting(this, true)">
+              </div>
+              <div class="control-item">
+                <label><input type="checkbox" id="agc" onchange="updateSetting(this, true)"> Auto Gain</label>
+              </div>
+              <div class="control-item">
+                <label>Gain Ceiling <span class="value-display" id="val_gainceiling">0</span></label>
+                <input type="range" id="gainceiling" min="0" max="6" value="0" oninput="updateSetting(this, true)">
+              </div>
+            </div>
+            
+            <div class="control-group">
+              <h3>🔄 Orientation</h3>
+              <div class="control-item">
+                <label>Rotation <span class="value-display" id="val_rotation">0</span>°</label>
+                <input type="range" id="rotation" min="0" max="359" value="0" oninput="updateSetting(this, true)">
+              </div>
+              <div class="control-item">
+                <label><input type="checkbox" id="hmirror" onchange="updateSetting(this, true)"> H-Mirror</label>
+              </div>
+              <div class="control-item">
+                <label><input type="checkbox" id="vflip" onchange="updateSetting(this, true)"> V-Flip</label>
+              </div>
+            </div>
+            
+            <div class="control-group">
+              <h3>🌈 White Balance</h3>
+              <div class="control-item">
+                <label><input type="checkbox" id="awb" onchange="updateSetting(this, true)"> Auto White Balance</label>
+              </div>
+              <div class="control-item">
+                <label><input type="checkbox" id="awb_gain" onchange="updateSetting(this, true)"> AWB Gain</label>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="control-group">
-          <h3>🔄 Orientation</h3>
-          <div class="control-item">
-            <label>Rotation <span class="value-display" id="val_rotation">0</span>°</label>
-            <input type="range" id="rotation" min="0" max="359" value="0" oninput="updateSetting(this)">
+        
+        <!-- Live Preview Mini -->
+        <div class="live-preview-mini">
+          <h3>📸 Live Preview</h3>
+          <div class="preview-container">
+            <img id="cameraPreview" src="/stream" alt="Camera Preview">
+            <button class="preview-refresh" onclick="refreshPreview()">🔄 Refresh</button>
           </div>
-          <div class="control-item">
-            <label><input type="checkbox" id="hmirror" onchange="updateSetting(this)"> H-Mirror</label>
-          </div>
-          <div class="control-item">
-            <label><input type="checkbox" id="vflip" onchange="updateSetting(this)"> V-Flip</label>
+          <div style="padding: 15px; background: #1a1a1a; margin-top: 10px; border-radius: 5px;">
+            <p style="color: #bbb; font-size: 14px; margin-bottom: 10px;">Adjust settings and see live changes here.</p>
+            <button class="btn-small btn-primary" onclick="autoRefreshPreview()" id="autoRefreshBtn">⏯️ Auto-refresh: OFF</button>
+            <span style="color: #888; font-size: 12px; margin-left: 10px;" id="lastUpdate">Last update: -</span>
           </div>
         </div>
       </div>
@@ -544,6 +614,9 @@ void handleRoot() {
     let currentDigitIndex = 0;
     let totalDigits = 7;
     let imageNaturalWidth, imageNaturalHeight;
+    let autoRefreshInterval = null;
+    let autoRefreshActive = false;
+    let previewRefreshTimer = null;
 
     function switchTab(tab) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -551,11 +624,61 @@ void handleRoot() {
       event.target.classList.add('active');
       document.getElementById(tab).classList.add('active');
       
+      // Stop auto-refresh when switching away from camera tab
+      if (tab !== 'camera') {
+        stopAutoRefresh();
+      }
+      
       if (tab === 'roi') {
         setTimeout(initROICanvas, 100);
+      } else if (tab === 'camera') {
+        // Start auto-refresh for camera tab
+        setTimeout(refreshCameraPreview, 100);
       }
     }
 
+    function refreshCameraPreview() {
+      const img = document.getElementById('cameraPreview');
+      if (img) {
+        const timestamp = new Date().getTime();
+        img.src = '/stream?' + timestamp;
+        document.getElementById('lastUpdate').textContent = 'Last update: ' + new Date().toLocaleTimeString();
+      }
+    }
+
+    function refreshPreview() {
+      refreshCameraPreview();
+    }
+
+    function autoRefreshPreview() {
+      const btn = document.getElementById('autoRefreshBtn');
+      if (autoRefreshActive) {
+        stopAutoRefresh();
+        btn.textContent = '⏯️ Auto-refresh: OFF';
+        btn.style.background = '#00ff88';
+      } else {
+        startAutoRefresh();
+        btn.textContent = '⏯️ Auto-refresh: ON';
+        btn.style.background = '#ff8800';
+      }
+    }
+
+    function startAutoRefresh() {
+      autoRefreshActive = true;
+      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+      autoRefreshInterval = setInterval(refreshCameraPreview, 500); // Refresh every 500ms
+      refreshCameraPreview();
+    }
+
+    function stopAutoRefresh() {
+      autoRefreshActive = false;
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+      }
+    }
+
+    // Rest of your existing functions remain the same...
     function initROICanvas() {
       canvas = document.getElementById('roiCanvas');
       ctx = canvas.getContext('2d');
@@ -769,8 +892,8 @@ void handleRoot() {
       .catch(e => alert('Save failed: ' + e));
     }
 
-    // Camera settings
-    function updateSetting(elem) {
+    // Camera settings with live preview
+    function updateSetting(elem, liveUpdate = false) {
       const id = elem.id;
       let value = elem.type === 'checkbox' ? (elem.checked ? 1 : 0) : elem.value;
       
@@ -778,11 +901,27 @@ void handleRoot() {
         document.getElementById('val_' + id).textContent = value;
       }
       
-      fetch('/settings', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: id + '=' + value
-      });
+      // If liveUpdate is true, apply setting immediately and refresh preview
+      if (liveUpdate) {
+        fetch('/settings', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: id + '=' + value
+        })
+        .then(() => {
+          if (autoRefreshActive) {
+            // Clear any pending timer and set new one
+            if (previewRefreshTimer) clearTimeout(previewRefreshTimer);
+            previewRefreshTimer = setTimeout(refreshCameraPreview, 300); // Wait 300ms before refreshing
+          }
+        });
+      } else {
+        fetch('/settings', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: id + '=' + value
+        });
+      }
     }
 
     // WiFi functions
@@ -868,11 +1007,16 @@ void handleRoot() {
         }
       });
 
-    // Auto-refresh stream
+    // Auto-refresh main stream
     setInterval(() => {
       const img = document.getElementById('stream');
       if (img) img.src = '/stream?' + Date.now();
     }, 200);
+
+    // Start auto-refresh when camera tab is active
+    window.addEventListener('load', function() {
+      refreshCameraPreview();
+    });
   </script>
 </body>
 </html>
@@ -898,9 +1042,19 @@ void handleGetSettings() {
   json += "\"brightness\":" + String(camSettings.brightness) + ",";
   json += "\"contrast\":" + String(camSettings.contrast) + ",";
   json += "\"saturation\":" + String(camSettings.saturation) + ",";
+  json += "\"sharpness\":" + String(camSettings.sharpness) + ",";
+  json += "\"denoise\":" + String(camSettings.denoise) + ",";
+  json += "\"quality\":" + String(camSettings.quality) + ",";
   json += "\"rotation\":" + String(camSettings.rotation) + ",";
   json += "\"hmirror\":" + String(camSettings.hmirror) + ",";
-  json += "\"vflip\":" + String(camSettings.vflip);
+  json += "\"vflip\":" + String(camSettings.vflip) + ",";
+  json += "\"awb\":" + String(camSettings.awb) + ",";
+  json += "\"awb_gain\":" + String(camSettings.awb_gain) + ",";
+  json += "\"aec\":" + String(camSettings.aec) + ",";
+  json += "\"aec_value\":" + String(camSettings.aec_value) + ",";
+  json += "\"ae_level\":" + String(camSettings.ae_level) + ",";
+  json += "\"agc\":" + String(camSettings.agc) + ",";
+  json += "\"gainceiling\":" + String(camSettings.gainceiling);
   json += "}";
   server.send(200, "application/json", json);
 }
@@ -916,12 +1070,32 @@ void handleSetSettings() {
       camSettings.contrast = value;
     else if (name == "saturation")
       camSettings.saturation = value;
+    else if (name == "sharpness")
+      camSettings.sharpness = value;
+    else if (name == "denoise")
+      camSettings.denoise = value;
+    else if (name == "quality")
+      camSettings.quality = value;
     else if (name == "rotation")
       camSettings.rotation = value;
     else if (name == "hmirror")
       camSettings.hmirror = value;
     else if (name == "vflip")
       camSettings.vflip = value;
+    else if (name == "awb")
+      camSettings.awb = value;
+    else if (name == "awb_gain")
+      camSettings.awb_gain = value;
+    else if (name == "aec")
+      camSettings.aec = value;
+    else if (name == "aec_value")
+      camSettings.aec_value = value;
+    else if (name == "ae_level")
+      camSettings.ae_level = value;
+    else if (name == "agc")
+      camSettings.agc = value;
+    else if (name == "gainceiling")
+      camSettings.gainceiling = value;
   }
 
   applyCameraSettings();
@@ -1089,7 +1263,7 @@ String sendPhoto() {
 
   client.println("POST " + String(serverPath) + " HTTP/1.1");
   client.println("Host: " + String(serverName));
-  client.println("X-API-Key: JanganKasihTau!");
+  client.println("X-API-Key: example");
   client.println("X-ROI-Config: " + roiJson);
   client.println("Content-Length: " +
                  String(fb->len + head.length() + tail.length()));
