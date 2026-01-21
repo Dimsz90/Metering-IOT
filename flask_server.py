@@ -549,7 +549,7 @@ def upload_image(camera_name):
     
     # Check API key
     api_key = request.headers.get('X-API-Key')
-    if api_key != 'JanganKasihTau!':
+    if api_key != 'example':
         print(f"❌ Unauthorized access attempt", flush=True)
         return jsonify({'error': 'Unauthorized'}), 401
     
