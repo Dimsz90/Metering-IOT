@@ -67,9 +67,6 @@ FLASK_SECRET_KEY=your_flask_secret
 
 - API endpoint dilindungi dengan API Key
 - Dashboard memerlukan PIN login
-- File `.env` tidak di-commit ke repository
 
 
-## 📝 License
 
-MIT License
